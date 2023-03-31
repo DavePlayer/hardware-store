@@ -5,3 +5,14 @@
 .test {
   @apply w-[100%] h-[100%] bg-red-500;
 }
+
+.aside-link {
+  @apply w-full p-4 rounded-lg flex fill-gray-400 text-gray-400 mt-2
+}
+.aside-link p {
+  @apply pl-2
+}
+
+.aside-link.active {
+  @apply bg-aside-button fill-white text-white
+}
