@@ -1,7 +1,14 @@
+import { Routes, Route } from "react-router-dom"
+import Aside from "./components/Aside"
 
 function App() {
   return (
-    <div className='test'>1234536</div>
+  <>
+    <Aside />
+    <Routes>
+      <Route path="/" element={<h1>/</h1>}></Route>
+    </Routes>
+  </>
   )
 }
 
