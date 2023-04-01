@@ -39,7 +39,9 @@ export const Table: React.FC<IProps> = ({
                   >
                     <span className="flex no-tap gap-1 justify-start items-center">
                       {column.render("Header")}
+                      {/* checking if column is sorted */}
                       {column.isSorted ? (
+                        // checking sorting type and adding by it proper svg icon
                         column.isSortedDesc ? (
                           <svg
                             className="h-[1rem]"
@@ -58,6 +60,7 @@ export const Table: React.FC<IProps> = ({
                           </svg>
                         )
                       ) : (
+                        // it's hacky way of not adding svg if column is not sortable
                         column.canSort && (
                           <svg
                             className="h-[1rem]"

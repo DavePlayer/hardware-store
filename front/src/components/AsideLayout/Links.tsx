@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 export function Links() {
   return (
     <section className="w-100 flex flex-col mt-12">
-      <Link className="aside-link active" to="/">
+      <Link className="aside-link active" to="/hardware-store">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -15,7 +15,7 @@ export function Links() {
         </svg>
         <p>Hardware Store</p>
       </Link>
-      <Link className="aside-link" to="/">
+      <Link className="aside-link" to="/rent-hardware">
         <svg
           width="24"
           height="24"
