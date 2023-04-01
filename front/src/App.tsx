@@ -1,13 +1,14 @@
 import { Routes, Route } from "react-router-dom";
-import { Aside } from "./components/Aside";
+import { AsideLayout } from "./components/AsideLayout";
+import { HardwareStore } from "./components/HardwareStore";
 
 function App() {
   return (
     <main className="flex">
       <Routes>
         <Route path="/" element={<h1>/</h1>}></Route>
-        <Route element={<Aside />}>
-          <Route path="/hardware-store" element={<h1>/</h1>}></Route>
+        <Route element={<AsideLayout />}>
+          <Route path="/hardware-store" element={<HardwareStore />} />
         </Route>
       </Routes>
     </main>
