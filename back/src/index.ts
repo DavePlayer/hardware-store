@@ -7,8 +7,11 @@ const app = express();
 app.use(express.json());
 dotenv.config();
 
-app.use("/", router);
+export const database = new DatabaseC();
+database.establishConnection(process.env.MONGO_STRING as string, "hardware-store").catch((err) => {
+    throw err;
+});
 
-export const database = new DatabaseC(process.env.MONGO_STRING as string, "hardware-store");
+app.use("/", router);
 
 app.listen(9999, () => console.log(`listening on port 9999`));

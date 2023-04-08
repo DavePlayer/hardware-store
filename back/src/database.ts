@@ -1,4 +1,4 @@
-import { ListDatabasesResult, MongoClient } from "mongodb";
+import { MongoClient, Db } from "mongodb";
 import bcrypt from "bcrypt";
 
 export interface IUser {
@@ -12,48 +12,56 @@ class DatabaseC {
     client: MongoClient;
     dbName: string;
 
-    constructor(mongoString: string, databaseName: string) {
-        this.establishConnection(mongoString, databaseName);
-    }
-
     establishConnection = async (mongoString: string, databaseName: string) => {
         this.mongoLink = mongoString;
         this.dbName = databaseName;
+        console.log(`establishing connection to database`);
         if (this.mongoLink) {
-            this.client = new MongoClient(this.mongoLink);
             try {
+                console.log("still ok 1");
+                this.client = new MongoClient(this.mongoLink, {
+                    connectTimeoutMS: 3000,
+                    serverSelectionTimeoutMS: 3000,
+                });
                 await this.client.connect();
+                console.log("still ok 2");
             } catch (err) {
-                console.error(`Database: \n${err}`);
+                throw err;
             }
+        } else {
+            throw new Error(`mongolink is not valid`);
         }
     };
 
     validateCollection = (collectionName: string): Promise<string> =>
         new Promise((res, rej) => {
-            this.client
-                .db(this.dbName)
-                .listCollections({ name: collectionName })
-                .next()
-                .then((collinfo) => {
-                    if (collinfo == null) {
-                        this.client
-                            .db(this.dbName)
-                            .createCollection(collectionName)
-                            .then(() => {
-                                console.log(`Database: collection ${collectionName} created`);
-                                res(collectionName);
-                            })
-                            .catch((err) => rej(err));
-                    } else {
-                        console.log(`Database: collection ${collectionName} exists`);
-                        res(collectionName);
-                    }
-                })
-                .catch((err) => {
-                    console.error(err);
-                    rej(err);
-                });
+            if (this.client) {
+                this.client
+                    .db(this.dbName)
+                    .listCollections({ name: collectionName })
+                    .next()
+                    .then((collinfo) => {
+                        if (collinfo == null) {
+                            this.client
+                                .db(this.dbName)
+                                .createCollection(collectionName)
+                                .then(() => {
+                                    console.log(`Database: collection ${collectionName} created`);
+                                    res(collectionName);
+                                })
+                                .catch((err) => rej(err));
+                        } else {
+                            console.log(`Database: collection ${collectionName} exists`);
+                            res(collectionName);
+                        }
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                        rej(err);
+                    });
+            } else {
+                throw new Error("error when validating collection");
+            }
         });
     getUser = async (login: number, collectionName: string) => {
         try {
@@ -65,7 +73,7 @@ class DatabaseC {
             // console.log(gotUser);
             return gotUser as unknown as IUser | null;
         } catch (error) {
-            console.error(error);
+            throw error;
         }
     };
 
@@ -81,7 +89,7 @@ class DatabaseC {
             console.log("savind user: ", user.login);
             await this.client.db(this.dbName).collection(collectionName).insertOne(user);
         } catch (err) {
-            console.log(err);
+            throw err;
         }
     };
 }
