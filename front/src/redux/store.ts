@@ -1,10 +1,14 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore, applyMiddleware } from "@reduxjs/toolkit";
 import productsReducer from "./reducers/product";
+import logger from "redux-logger";
+import userReducer from "./reducers/user.js";
 
 export const store = configureStore({
-  reducer: {
-    products: productsReducer,
-  },
+    reducer: {
+        products: productsReducer,
+        user: userReducer,
+    },
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger),
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
