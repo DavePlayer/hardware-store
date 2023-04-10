@@ -7,7 +7,7 @@ export const loginRouter = Router();
 
 loginRouter.get("/", async (req, res) => {
     try {
-        const { login, password } = req.body;
+        const { login, password } = req.query;
         if (!login || !password)
             return res.status(400).json({ error: "login or password is empty" });
         const dbuser = await database.getUser(login, "users");

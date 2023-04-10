@@ -2,6 +2,7 @@ import express from "express";
 import DatabaseC from "./database.js";
 import { router } from "./router.js";
 import dotenv from "dotenv";
+import cors from "cors"
 
 const app = express();
 app.use(express.json());
@@ -11,6 +12,8 @@ export const database = new DatabaseC();
 database.establishConnection(process.env.MONGO_STRING as string, "hardware-store").catch((err) => {
     throw err;
 });
+
+app.use(cors())
 
 app.use("/", router);
 
