@@ -1,8 +1,18 @@
+import { Routes, Route } from "react-router-dom";
+import { AsideLayout } from "./components/AsideLayout";
+import { HardwareStore } from "./components/HardwareStore";
 
 function App() {
   return (
-    <div className='test'>1234536</div>
-  )
+    <main className="flex">
+      <Routes>
+        <Route path="/" element={<h1>/</h1>}></Route>
+        <Route element={<AsideLayout />}>
+          <Route path="/hardware-store" element={<HardwareStore />} />
+        </Route>
+      </Routes>
+    </main>
+  );
 }
 
-export default App
+export default App;
