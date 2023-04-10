@@ -5,6 +5,16 @@ export interface IUser {
     _Id?: number;
     login: string;
     password: string;
+    isAdmin: boolean;
+    userName: String;
+}
+
+export interface Iitem {
+    _Id?: number;
+    nameAndCompany: string;
+    date: string;
+    rentedTo: number | null;
+    beingRepaired: boolean;
 }
 
 class DatabaseC {
@@ -72,6 +82,20 @@ class DatabaseC {
                 .findOne({ login: login });
             // console.log(gotUser);
             return gotUser as unknown as IUser | null;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    getItems = async (collectionName: string, userId: number) => {
+        try {
+            collectionName = await this.validateCollection(collectionName);
+            const items = await this.client
+                .db(this.dbName)
+                .collection(collectionName)
+                .find({ $or: [{ rentedTo: null }, { rentedTo: userId }] })
+                .toArray();
+            return items as unknown as Array<Iitem> | null;
         } catch (error) {
             throw error;
         }
