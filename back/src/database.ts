@@ -1,4 +1,4 @@
-import { MongoClient, Db } from "mongodb";
+import { MongoClient, Db, ObjectId } from "mongodb";
 import bcrypt from "bcrypt";
 
 export interface IUser {
@@ -15,6 +15,10 @@ export interface Iitem {
     date: string;
     rentedTo: number | null;
     beingRepaired: boolean;
+}
+
+interface IaddedItem extends Iitem {
+    _Id?: number;
 }
 
 class DatabaseC {
@@ -98,6 +102,99 @@ class DatabaseC {
             return items as unknown as Array<Iitem> | null;
         } catch (error) {
             throw error;
+        }
+    };
+
+    getItem = async (collectionName: string, itemId: number) => {
+        try {
+            collectionName = await this.validateCollection(collectionName);
+            const items = await this.client
+                .db(this.dbName)
+                .collection(collectionName)
+                .findOne({ _id: new ObjectId(itemId) });
+            return items as unknown as Iitem | null;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    addItem = async (collectionName: string, item: IaddedItem) => {
+        try {
+            console.log(item);
+            collectionName = await this.validateCollection(collectionName);
+            await this.client.db(this.dbName).collection(collectionName).insertOne(item);
+            return "added new item";
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    deleteItem = async (collectionName: string, itemId: number) => {
+        try {
+            collectionName = await this.validateCollection(collectionName);
+            await this.client
+                .db(this.dbName)
+                .collection(collectionName)
+                .deleteOne({ _id: new ObjectId(itemId) });
+            return "properly deleted item";
+        } catch (err) {
+            throw err;
+        }
+    };
+
+    rentItem = async (collectionName: string, userId: number, itemId: number) => {
+        try {
+            console.log(`renting item(${itemId}) to user(${userId})`);
+            collectionName = await this.validateCollection(collectionName);
+            await this.client
+                .db(this.dbName)
+                .collection(collectionName)
+                .updateOne({ _id: new ObjectId(itemId) }, { $set: { rentedTo: userId } });
+            return "properly rented item";
+        } catch (err) {
+            throw err;
+        }
+    };
+
+    release = async (collectionName: string, itemId: number) => {
+        try {
+            console.log(`releasing item(${itemId})`);
+            collectionName = await this.validateCollection(collectionName);
+            await this.client
+                .db(this.dbName)
+                .collection(collectionName)
+                .updateOne({ _id: new ObjectId(itemId) }, { $set: { rentedTo: null } });
+            return "properly released item";
+        } catch (err) {
+            throw err;
+        }
+    };
+
+    sendToRepair = async (collectionName: string, itemId: number) => {
+        try {
+            console.log(`releasing item(${itemId})`);
+            collectionName = await this.validateCollection(collectionName);
+            await this.client
+                .db(this.dbName)
+                .collection(collectionName)
+                .updateOne({ _id: new ObjectId(itemId) }, { $set: { beingRepaired: true } });
+            return "item sent to repair";
+        } catch (err) {
+            throw err;
+        }
+    };
+
+    getFromRepair = async (collectionName: string, itemId: number) => {
+        try {
+            console.log(`releasing item(${itemId})`);
+            collectionName = await this.validateCollection(collectionName);
+            await this.client
+                .db(this.dbName)
+                .collection(collectionName)
+                .updateOne({ _id: new ObjectId(itemId) }, { $set: { beingRepaired: false } });
+            return "got item from repair";
+        } catch (err) {
+            throw err;
         }
     };
 
