@@ -2,12 +2,13 @@ import { Router } from "express";
 import { database } from "../index.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { validateJWT } from "../middlewares/validateJWT.js";
 
 export const loginRouter = Router();
 
 loginRouter.get("/", async (req, res) => {
     try {
-        const { login, password } = req.query;
+        const { login, password } = req.query as { login: string; password: string };
         if (!login || !password)
             return res.status(400).json({ error: "login or password is empty" });
         const dbuser = await database.getUser(login, "users");
@@ -33,4 +34,8 @@ loginRouter.get("/", async (req, res) => {
         console.error(err);
         return res.status(500).json({ status: "internal server error" });
     }
+});
+
+loginRouter.get("/validate-token", validateJWT, (req, res) => {
+    res.json({ status: "ok" });
 });

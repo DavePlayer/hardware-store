@@ -77,7 +77,7 @@ class DatabaseC {
                 throw new Error("error when validating collection");
             }
         });
-    getUser = async (login: number, collectionName: string) => {
+    getUser = async (login: string, collectionName: string) => {
         try {
             collectionName = await this.validateCollection(collectionName);
             const gotUser = await this.client
