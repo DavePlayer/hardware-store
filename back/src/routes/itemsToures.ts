@@ -69,7 +69,7 @@ itemsRouter.post("/rent", validateJWT, async (req, res) => {
         //     items,
         //     "\n------------------------------------------"
         // );
-        return res.json({ status: status });
+        return res.json({ status: status, itemId });
     } catch (err) {
         console.error(err);
         res.status(500).json({ status: "server error when renting item" });
