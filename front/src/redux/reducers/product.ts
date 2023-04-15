@@ -4,6 +4,8 @@ import config from "./../../config.json";
 import { json } from "react-router-dom";
 import jwtDecode from "jwt-decode";
 import { IUser } from "./user.js";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export interface IProduct {
     _id: string;
@@ -189,11 +191,13 @@ export const productsSlice = createSlice({
             };
             const userData: IUser = jwtDecode(token);
             state.data = [...state.data.filter((o) => o._id != itemId)];
+            toast.success("successfully rented new product");
         });
 
         // error
         builder.addCase(rentProduct.rejected, (state, action) => {
             console.error(action.error.message);
+            toast.error(`error when renting product: ${action.error.message}`);
         });
 
         // -------------------
@@ -211,11 +215,13 @@ export const productsSlice = createSlice({
             const { status, itemId, token }: { status: string; itemId: string; token: string } =
                 action.payload;
             state.data = [...state.data.filter((o) => o._id != itemId)];
+            toast.success("successfully returned new product");
         });
 
         // error
         builder.addCase(returnProduct.rejected, (state, action) => {
             console.error(action.error.message);
+            toast.error(`error when returning product: ${action.error.message}`);
         });
     },
 });

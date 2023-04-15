@@ -2,6 +2,8 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import config from "./../../config.json";
 import jwtDecode from "jwt-decode";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export interface IUser {
     _id: string;
@@ -71,6 +73,7 @@ export const userSlice = createSlice({
         });
         builder.addCase(fetchLogin.rejected, (state, action) => {
             console.error(action.error.message);
+            toast.error(action.error.message);
         });
     },
 });
