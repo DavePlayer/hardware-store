@@ -63,6 +63,10 @@ itemsRouter.post("/rent", validateJWT, async (req, res) => {
     try {
         const { itemId } = req.body;
         if (!itemId) return res.status(400).json({ error: "item id not provided" });
+        const item = await database.getItem("items", itemId);
+        if (item == null) return res.status(404).json({ status: "item not found" });
+        if (item.rentedTo != null)
+            return res.status(405).json({ status: "product already rented" });
         const status = await database.rentItem("items", req.body.token._id, itemId);
         // console.log(
         //     "------------------------------\n",
@@ -80,8 +84,11 @@ itemsRouter.post("/release", validateJWT, async (req, res) => {
     try {
         const { itemId } = req.body;
         if (!itemId) return res.status(400).json({ error: "item id not provided" });
+        const item = await database.getItem("items", itemId);
+        if (item == null) return res.status(404).json({ status: "item not found" });
+        if (item.rentedTo == null) return res.status(405).json({ status: "product not rented" });
         const status = await database.release("items", itemId);
-        return res.json({ status: status });
+        return res.json({ status: status, itemId });
     } catch (err) {
         console.error(err);
         res.status(500).json({ status: "server error when renting item" });
