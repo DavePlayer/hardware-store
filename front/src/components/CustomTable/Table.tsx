@@ -26,7 +26,9 @@ export const Table: React.FC<IProps> = ({
             <TableTitle title={title} />
             <section className="flex justify-center items-center">
                 {table.rows.length <= 0 ? (
-                    <h1 className="text-3xl mt-4">Ups. looks like there is no product to rent</h1>
+                    <h1 className="text-3xl mt-4">
+                        Ups. looks like there is no product in this table
+                    </h1>
                 ) : (
                     <table
                         className="w-11/12 text-lg font-normal rounded-lg overflow-hidden mt-8"

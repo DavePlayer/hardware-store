@@ -5,6 +5,7 @@ import { AsideLayout } from "./components/AsideLayout";
 import { HardwareStore } from "./components/HardwareStore";
 import { Login } from "./components/Login.js";
 import { Protector } from "./components/Protector.js";
+import { RentHardware } from "./components/RentHardware.js";
 
 function App() {
     return (
@@ -17,6 +18,14 @@ function App() {
                         element={
                             <Protector>
                                 <HardwareStore />
+                            </Protector>
+                        }
+                    />
+                    <Route
+                        path="/rent-hardware"
+                        element={
+                            <Protector>
+                                <RentHardware />
                             </Protector>
                         }
                     />
