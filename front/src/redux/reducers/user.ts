@@ -31,10 +31,9 @@ export const fetchLogin = createAsyncThunk(
             headers: { "Content-type": "application/json;charset=utf-8" },
         })
             .then(async (data) => {
-                console.log("----------------------data: ", data);
                 if (data.ok) {
                     return data.json();
-                } else throw await data.json();
+                } else throw await new Error((await data.json()).status);
             })
             .then((o) => {
                 const data: IUser = jwtDecode(o.token);
@@ -56,6 +55,18 @@ export const userSlice = createSlice({
             state.isLoged = true;
             state.jwt = token;
             state.userName = data.userName;
+        },
+        logout: (state) => {
+            console.log(`loging out`);
+            localStorage.removeItem("token");
+            return (state = {
+                loading: false,
+                _id: "",
+                isAdmin: false,
+                userName: "super hacka",
+                isLoged: false,
+                jwt: "",
+            });
         },
     },
     extraReducers: (builder) => {
@@ -79,6 +90,6 @@ export const userSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { readToken } = userSlice.actions;
+export const { readToken, logout } = userSlice.actions;
 
 export default userSlice.reducer;

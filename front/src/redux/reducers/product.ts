@@ -141,6 +141,7 @@ export const productsSlice = createSlice({
         builder.addCase(fetchProducts.fulfilled, (state, action) => {
             state.loading = false;
             const { items, token }: { items: IProduct[]; token: string } = action.payload;
+            console.log(items);
             const userData: IUser = jwtDecode(token);
             state.data = items.filter((o) => o.rentedTo != userData._id);
         });

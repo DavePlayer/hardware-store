@@ -28,6 +28,11 @@ export function HardwareStore() {
             {
                 Header: "Date",
                 accessor: "date",
+                sortType: (a, b) => {
+                    const aa = new Date(a.original.date.replace(".", "/")).getTime();
+                    const bb = new Date(b.original.date.replace(".", "/")).getTime();
+                    return aa > bb ? -1 : 1;
+                },
             },
             {
                 Header: "Avaibality",
@@ -101,7 +106,7 @@ export function HardwareStore() {
         []
     );
     return (
-        <div className="w-5/6">
+        <div className="w-5/6 max-h-[100vh] overflow-y-scroll">
             <Table
                 title="Hardware List"
                 buttonName="Rent"

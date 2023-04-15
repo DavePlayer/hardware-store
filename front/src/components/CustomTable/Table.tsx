@@ -34,7 +34,7 @@ export const Table: React.FC<IProps> = ({
                         className="w-11/12 text-lg font-normal rounded-lg overflow-hidden mt-8"
                         {...table.getTableProps()}
                     >
-                        <thead>
+                        <thead className="sticky top-[0px]">
                             {table.headerGroups.map((headerGroup) => (
                                 <tr {...headerGroup.getHeaderGroupProps()}>
                                     {headerGroup.headers.map((column) => (

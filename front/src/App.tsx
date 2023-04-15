@@ -8,6 +8,7 @@ import { Protector } from "./components/Protector.js";
 import { RentHardware } from "./components/RentHardware.js";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Logout } from "./components/Logout.js";
 
 function App() {
     return (
@@ -34,6 +35,7 @@ function App() {
                         />
                     </Route>
                     <Route path="/login" element={<Login />}></Route>
+                    <Route path="/logout" element={<Logout />}></Route>
                 </Routes>
             </main>
             <ToastContainer closeButton={true} draggable={false}></ToastContainer>
