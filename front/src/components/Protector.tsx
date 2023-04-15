@@ -14,6 +14,11 @@ export const Protector: React.FC<{ children?: ReactNode }> = ({ children }) => {
     useEffect(() => {
         //get token from local storage. forward to login if token doesn't exist
         const token = localStorage.getItem("token");
+        if (token == null || token == undefined || token == "undefined") {
+            localStorage.removeItem("token");
+            return navigate("/login");
+        }
+
         if (user.jwt.length <= 0 && token != null && token.length > 0) {
             fetch(`${config.serverUrl}/login/validate-token`, {
                 method: "GET",
@@ -32,11 +37,12 @@ export const Protector: React.FC<{ children?: ReactNode }> = ({ children }) => {
                 })
                 .catch((err) => {
                     console.error(err.message);
+                    localStorage.removeItem("token");
                     setError(err.message);
+                    return navigate("/login");
                 });
             return;
-        } else if (token == null) return navigate("/login");
-
+        }
         // secure fake token paste (verify before forwarding to element)
         if (user.jwt.length > 0)
             fetch(`${config.serverUrl}/login/validate-token`, {

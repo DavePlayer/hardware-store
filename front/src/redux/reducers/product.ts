@@ -36,10 +36,6 @@ export const fetchProducts = createAsyncThunk(
             })
             .then((json) => {
                 return { items: json.items, token };
-            })
-            .catch((err) => {
-                console.error(err);
-                return err;
             });
     }
 );
@@ -61,10 +57,6 @@ export const fetchRentedProducts = createAsyncThunk(
             })
             .then((json) => {
                 return { items: json.items, token };
-            })
-            .catch((err) => {
-                console.error(err);
-                return err;
             });
     }
 );
@@ -93,10 +85,6 @@ export const rentProduct = createAsyncThunk(
                     ...json,
                     token,
                 };
-            })
-            .catch((err) => {
-                console.error(err);
-                return err;
             });
     }
 );
@@ -125,10 +113,6 @@ export const returnProduct = createAsyncThunk(
                     ...json,
                     token,
                 };
-            })
-            .catch((err) => {
-                console.error(err);
-                return err;
             });
     }
 );

@@ -28,14 +28,15 @@ export const fetchLogin = createAsyncThunk(
             method: "GET",
             headers: { "Content-type": "application/json;charset=utf-8" },
         })
-            .then(async (data) => (data.ok ? data.json() : console.error(await data.json())))
+            .then(async (data) => {
+                console.log("----------------------data: ", data);
+                if (data.ok) {
+                    return data.json();
+                } else throw await data.json();
+            })
             .then((o) => {
                 const data: IUser = jwtDecode(o.token);
                 return { jwt: o.token, ...data };
-            })
-            .catch((err) => {
-                console.error(err);
-                return err;
             });
     }
 );
