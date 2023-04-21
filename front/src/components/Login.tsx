@@ -63,7 +63,7 @@ export const Login = () => {
                         />
                         <button
                             onClick={(e) => handleButton(e)}
-                            className="p-3 bg-blue-600 w-full rounded-full mt-[3rem] text-white font-semibold"
+                            className="button mt-[3rem] w-full"
                         >
                             Login
                         </button>
