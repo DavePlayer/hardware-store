@@ -23,6 +23,18 @@ export function Links() {
                 </svg>
                 <p>Rent Hardware</p>
             </NavLink>
+            <NavLink className="aside-link" to="/admin-panel">
+                <svg
+                    width="24"
+                    height="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                >
+                    <path d="M20.822 18.096c-3.439-.794-6.641-1.49-5.09-4.418 4.719-8.912 1.251-13.678-3.732-13.678-5.082 0-8.465 4.949-3.732 13.678 1.598 2.945-1.725 3.641-5.09 4.418-2.979.688-3.178 2.143-3.178 4.663l.005 1.241h23.99l.005-1.241c0-2.52-.199-3.975-3.178-4.663zm-1.822 3.904h-5v-2h5v2z" />
+                </svg>
+                <p>Admin Actions</p>
+            </NavLink>
         </section>
     );
 }

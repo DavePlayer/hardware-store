@@ -9,6 +9,7 @@ import { RentHardware } from "./components/RentHardware.js";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Logout } from "./components/Logout.js";
+import { AdminPanel } from "./components/AdminPanel";
 
 function App() {
     return (
@@ -30,6 +31,14 @@ function App() {
                             element={
                                 <Protector>
                                     <RentHardware />
+                                </Protector>
+                            }
+                        />
+                        <Route
+                            path="/admin-panel"
+                            element={
+                                <Protector>
+                                    <AdminPanel />
                                 </Protector>
                             }
                         />
