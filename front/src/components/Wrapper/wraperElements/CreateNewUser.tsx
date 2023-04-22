@@ -30,7 +30,6 @@ export const CreateNewUser: React.FC<{
     };
     const handleClick = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
-        console.log(data);
         try {
             const result = await fetch(`${config.serverUrl}/register`, {
                 method: "POST",
@@ -48,7 +47,6 @@ export const CreateNewUser: React.FC<{
         } catch (err) {
             let message = "error when adding new user";
             if (err instanceof Error) message = err.message;
-            // we'll proceed, but let's report it
             toast.error(message);
         }
     };

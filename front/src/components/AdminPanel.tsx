@@ -17,7 +17,7 @@ export const AdminPanel = () => {
                 <button
                     className="button"
                     onClick={() => {
-                        setElement(() => <AddElement />);
+                        setElement(() => <AddElement visibility={setShowWrapper} />);
                         setShowWrapper(true);
                     }}
                 >
@@ -35,7 +35,7 @@ export const AdminPanel = () => {
                 <button
                     className="button"
                     onClick={() => {
-                        setElement(ManageItems);
+                        setElement(<ManageItems />);
                         setShowWrapper(true);
                     }}
                 >
