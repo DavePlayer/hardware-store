@@ -64,13 +64,7 @@ export function RentHardware() {
     );
     return (
         <div className="w-5/6">
-            <Table
-                title="Hardware List"
-                buttonName="Rent"
-                handleCustomButton={handleButton}
-                data={data}
-                columns={columns}
-            />
+            <Table title="Hardware List" data={data} columns={columns} />
         </div>
     );
 }

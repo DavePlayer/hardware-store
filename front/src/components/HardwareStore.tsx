@@ -14,7 +14,7 @@ export function HardwareStore() {
         dispatch(fetchProducts({ token: user.jwt }) as any);
     }, []);
     const handleButton = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, values: IProduct) => {
-        console.log(values._id);
+        e.preventDefault();
         dispatch(rentProduct({ token: user.jwt, itemId: values._id }) as any);
     };
     console.log(products);
@@ -29,9 +29,11 @@ export function HardwareStore() {
                 Header: "Date",
                 accessor: "date",
                 sortType: (a, b) => {
-                    const aa = new Date(a.original.date.replace(".", "/")).getTime();
-                    const bb = new Date(b.original.date.replace(".", "/")).getTime();
-                    return aa > bb ? -1 : 1;
+                    const aa = Date.parse(a.original.date.replaceAll(".", "/"));
+                    const bb = Date.parse(b.original.date.replaceAll(".", "/"));
+                    const dateA = new Date(aa).getTime();
+                    const dateB = new Date(bb).getTime();
+                    return dateA > dateB ? -1 : 1;
                 },
             },
             {
@@ -103,17 +105,11 @@ export function HardwareStore() {
             },
         ],
 
-        []
+        [products.data]
     );
     return (
         <div className="w-5/6 max-h-[100vh] overflow-y-scroll">
-            <Table
-                title="Hardware List"
-                buttonName="Rent"
-                handleCustomButton={handleButton}
-                data={data}
-                columns={columns}
-            />
+            <Table title="Hardware List" data={data} columns={columns} />
         </div>
     );
 }

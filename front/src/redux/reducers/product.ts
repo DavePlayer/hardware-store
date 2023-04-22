@@ -41,6 +41,27 @@ export const fetchProducts = createAsyncThunk(
             });
     }
 );
+export const fetchAllProducts = createAsyncThunk(
+    "product/fetchAllProducts",
+    ({ token }: { token: string }) => {
+        return fetch(`${config.serverUrl}/items`, {
+            method: "GET",
+            headers: { authorization: token },
+        })
+            .then(async (data) => {
+                if (!data.ok) {
+                    const json = await data.json();
+                    console.error(json);
+                    throw new Error(json.status);
+                } else {
+                    return data.json();
+                }
+            })
+            .then((json) => {
+                return { items: json.items, token };
+            });
+    }
+);
 
 export const fetchRentedProducts = createAsyncThunk(
     "product/fetchRentedProducts",
@@ -51,8 +72,9 @@ export const fetchRentedProducts = createAsyncThunk(
         })
             .then(async (data) => {
                 if (!data.ok) {
-                    console.error(await data.json());
-                    return [];
+                    const json = await data.json();
+                    console.error(json);
+                    throw new Error(json.status);
                 } else {
                     return data.json();
                 }
@@ -79,7 +101,7 @@ export const rentProduct = createAsyncThunk(
         })
             .then(async (data) => {
                 const json = await data.json();
-                if (!data.ok) console.error(data);
+                if (!data.ok) throw new Error(json.status);
                 return json;
             })
             .then((json: { status: string; itemId: string }) => {
@@ -107,7 +129,91 @@ export const returnProduct = createAsyncThunk(
         })
             .then(async (data) => {
                 const json = await data.json();
-                if (!data.ok) console.error(data);
+                if (!data.ok) throw new Error(json.status);
+                return json;
+            })
+            .then((json: { status: string; itemId: string }) => {
+                return {
+                    ...json,
+                    token,
+                };
+            });
+    }
+);
+
+export const sendToRepair = createAsyncThunk(
+    "product/sendTORepair",
+    ({ token, itemId }: { token: string; itemId: string }) => {
+        return fetch(`${config.serverUrl}/items/repair`, {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                authorization: token,
+            },
+            body: JSON.stringify({
+                itemId: itemId,
+            }),
+        })
+            .then(async (data) => {
+                const json = await data.json();
+                if (!data.ok) throw new Error(json.status);
+                return json;
+            })
+            .then((json: { status: string; itemId: string }) => {
+                return {
+                    ...json,
+                    token,
+                };
+            });
+    }
+);
+
+export const getFromRepair = createAsyncThunk(
+    "product/getFromRepair",
+    ({ token, itemId }: { token: string; itemId: string }) => {
+        return fetch(`${config.serverUrl}/items/get-from-repair`, {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                authorization: token,
+            },
+            body: JSON.stringify({
+                itemId: itemId,
+            }),
+        })
+            .then(async (data) => {
+                const json = await data.json();
+                if (!data.ok) throw new Error(json.status);
+                return json;
+            })
+            .then((json: { status: string; itemId: string }) => {
+                return {
+                    ...json,
+                    token,
+                };
+            });
+    }
+);
+
+export const Delete = createAsyncThunk(
+    "product/Delete",
+    ({ token, itemId }: { token: string; itemId: string }) => {
+        return fetch(`${config.serverUrl}/items/delete`, {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                authorization: token,
+            },
+            body: JSON.stringify({
+                itemId: itemId,
+            }),
+        })
+            .then(async (data) => {
+                const json = await data.json();
+                if (!data.ok) throw new Error(json.status);
                 return json;
             })
             .then((json: { status: string; itemId: string }) => {
@@ -143,11 +249,33 @@ export const productsSlice = createSlice({
             const { items, token }: { items: IProduct[]; token: string } = action.payload;
             console.log(items);
             const userData: IUser = jwtDecode(token);
-            state.data = items.filter((o) => o.rentedTo != userData._id);
+            state.data = items.filter((o) => o.beingRepaired == false);
         });
 
         // rejected
         builder.addCase(fetchProducts.rejected, (state, action) => {
+            console.error(action.error.message);
+        });
+
+        // ------------------
+        // fetch all products for admin uses
+        // -----------------
+
+        // pending
+        builder.addCase(fetchAllProducts.pending, (state) => {
+            state.loading = true;
+        });
+
+        // fulfilled
+        builder.addCase(fetchAllProducts.fulfilled, (state, action) => {
+            state.loading = false;
+            const { items, token }: { items: IProduct[]; token: string } = action.payload;
+            const userData: IUser = jwtDecode(token);
+            state.data = items;
+        });
+
+        // rejected
+        builder.addCase(fetchAllProducts.rejected, (state, action) => {
             console.error(action.error.message);
         });
 
@@ -191,7 +319,15 @@ export const productsSlice = createSlice({
                 token: string;
             };
             const userData: IUser = jwtDecode(token);
-            state.data = [...state.data.filter((o) => o._id != itemId)];
+            // state.data = [...state.data.filter((o) => o._id != itemId)];
+            state.data = [
+                ...state.data.map((o) => {
+                    if (o._id == itemId) {
+                        o.rentedTo = userData._id;
+                    }
+                    return o;
+                }),
+            ];
             toast.success("successfully rented new product");
         });
 
@@ -223,6 +359,91 @@ export const productsSlice = createSlice({
         builder.addCase(returnProduct.rejected, (state, action) => {
             console.error(action.error.message);
             toast.error(`error when returning product: ${action.error.message}`);
+        });
+
+        // -------------------
+        // send product to repair
+        // -------------------
+
+        // pending
+        builder.addCase(sendToRepair.pending, (state) => {
+            state.loading = true;
+        });
+
+        // fulfilled
+        builder.addCase(sendToRepair.fulfilled, (state, action) => {
+            state.loading = false;
+            const { status, itemId, token }: { status: string; itemId: string; token: string } =
+                action.payload;
+            const newData = state.data.map((o) => {
+                if (o._id === itemId) {
+                    return { ...o, beingRepaired: true };
+                }
+                return o;
+            });
+            state.data = newData;
+            console.log("state: ", state.data);
+            toast.success("successfully sent product to repair");
+        });
+
+        // error
+        builder.addCase(sendToRepair.rejected, (state, action) => {
+            console.error(action.error.message);
+            toast.error(`error when sending product to repair: ${action.error.message}`);
+        });
+
+        // -------------------
+        // get product from repair
+        // -------------------
+
+        // pending
+        builder.addCase(getFromRepair.pending, (state) => {
+            state.loading = true;
+        });
+
+        // fulfilled
+        builder.addCase(getFromRepair.fulfilled, (state, action) => {
+            state.loading = false;
+            const { status, itemId, token }: { status: string; itemId: string; token: string } =
+                action.payload;
+            const newData = state.data.map((o) => {
+                if (o._id === itemId) {
+                    return { ...o, beingRepaired: false };
+                }
+                return o;
+            });
+            state.data = newData;
+            toast.success("successfully returned product from repair");
+        });
+
+        // error
+        builder.addCase(getFromRepair.rejected, (state, action) => {
+            console.error(action.error.message);
+            toast.error(`error when returning product from repair: ${action.error.message}`);
+        });
+
+        // -------------------
+        // delete product
+        // -------------------
+
+        // pending
+        builder.addCase(Delete.pending, (state) => {
+            state.loading = true;
+        });
+
+        // fulfilled
+        builder.addCase(Delete.fulfilled, (state, action) => {
+            state.loading = false;
+            const { status, itemId, token }: { status: string; itemId: string; token: string } =
+                action.payload;
+            state.data = state.data.filter((o) => o._id != itemId);
+            toast.success("successfully deleted product");
+        });
+
+        // error
+        builder.addCase(Delete.rejected, (state, action) => {
+            console.error(action.error.message);
+            toast.error(`error when deleting product: ${action.error.message}`);
         });
     },
 });

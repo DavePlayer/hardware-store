@@ -4,22 +4,11 @@ import { CellProps, Column, useSortBy, useTable } from "react-table";
 
 interface IProps {
     title: String;
-    buttonName: String;
-    handleCustomButton: (
-        e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-        ...args: [any]
-    ) => void;
     columns: Column<any>[];
     data: any;
 }
 
-export const Table: React.FC<IProps> = ({
-    title,
-    buttonName,
-    handleCustomButton,
-    columns,
-    data,
-}) => {
+export const Table: React.FC<IProps> = ({ title, columns, data }) => {
     const table = useTable({ columns, data }, useSortBy);
     return (
         <>

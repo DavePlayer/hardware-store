@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from "react";
+import { useState } from "react";
 import { Wraper } from "./Wrapper/Wraper.js";
 import { AddElement } from "./Wrapper/wraperElements/AddElement.js";
 import { CreateNewUser } from "./Wrapper/wraperElements/CreateNewUser.js";
@@ -44,7 +44,7 @@ export const AdminPanel = () => {
                 <button
                     className="button"
                     onClick={() => {
-                        setElement(ManageUsers);
+                        setElement(<ManageUsers />);
                         setShowWrapper(true);
                     }}
                 >
