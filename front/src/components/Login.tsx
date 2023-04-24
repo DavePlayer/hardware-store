@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { fetchLogin } from "../redux/reducers/user.js";
 import { RootState } from "../redux/store.js";
 
@@ -28,6 +29,10 @@ export const Login = () => {
     const handleButton = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
         console.log(form);
+        const domainTest = /@example\.com$/.test(form.login);
+        if (form.login.length <= 0 || form.password.length <= 0)
+            return toast.error("some data is not filled");
+        if (!domainTest) return toast.error("wrong login email");
         dispatch(fetchLogin(form) as any);
     };
     const dispatch = useDispatch();

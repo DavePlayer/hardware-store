@@ -24,7 +24,7 @@ const initialState: IState = { loading: true, data: [] };
 export const fetchProducts = createAsyncThunk(
     "product/fetchProducts",
     ({ token }: { token: string }) => {
-        return fetch(`${config.serverUrl}/items`, {
+        return fetch(`${config.serverUrl}/items/not-yours`, {
             method: "GET",
             headers: { authorization: token },
         })
@@ -44,7 +44,7 @@ export const fetchProducts = createAsyncThunk(
 export const fetchAllProducts = createAsyncThunk(
     "product/fetchAllProducts",
     ({ token }: { token: string }) => {
-        return fetch(`${config.serverUrl}/items`, {
+        return fetch(`${config.serverUrl}/items/all`, {
             method: "GET",
             headers: { authorization: token },
         })

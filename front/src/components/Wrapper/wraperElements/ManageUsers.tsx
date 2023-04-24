@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Column } from "react-table";
-import { Delete, IProduct } from "../../../redux/reducers/product.js";
-import { fetchAllUsers, IUser } from "../../../redux/reducers/users.js";
+import { deleteUser, fetchAllUsers, IUser, updateUser } from "../../../redux/reducers/users.js";
 import { RootState } from "../../../redux/store.js";
 import { Table } from "../../CustomTable/Table.js";
 
@@ -13,48 +12,80 @@ interface IItem {
     beingRepaired: boolean;
 }
 
-export const ManageUsers = () => {
+export const ManageUsers: React.FC<{
+    visibility: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ visibility }) => {
     const usersData = useSelector((state: RootState) => state.users);
     const user = useSelector((state: RootState) => state.user);
+    const inputRef = React.useRef(null);
     const dispatch = useDispatch();
     const [idOfEdited, setIdOfEdited] = useState<string>("nothing");
-    const [editedUser, setEditedUser] = useState<IUser>({
-        _id: "",
-        isAdmin: false,
-        login: "",
-        userName: "",
-    });
+    const [loginValue, setLoginValue] = useState("");
+    const [userNameValue, setUserNameValue] = useState("");
+    const [isAdminValue, setIsAdminValue] = useState(false);
 
     useEffect(() => {
         dispatch(fetchAllUsers({ token: user.jwt }) as any);
     }, []);
+    useEffect(() => {
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [idOfEdited]);
 
     const handleUpdate = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, values: IUser) => {
         e.preventDefault();
-        setEditedUser({
-            ...values,
-        });
+        setLoginValue(values.login);
+        setUserNameValue(values.userName);
+        setIsAdminValue(values.isAdmin);
         setIdOfEdited(values._id);
     };
     const handleValuesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setEditedUser((prevState) => {
-            return {
-                ...prevState,
-                [name]: value,
-            };
-        });
-        console.log(name, value, editedUser);
+        const { name, value, type, checked } = e.target;
+        console.log(name, value, loginValue, userNameValue, isAdminValue);
+        switch (name) {
+            case "login":
+                setLoginValue(value);
+                break;
+            case "userName":
+                setUserNameValue(value);
+                break;
+            case "isAdmin":
+                setIsAdminValue(checked);
+                break;
+            default:
+                break;
+        }
     };
-    const handleSave = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, values: IUser) => {
+    const handleSave = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
-        console.log(values, editedUser);
+        console.log(loginValue, userNameValue, isAdminValue);
         setIdOfEdited("nothing");
+        const comperableUser = usersData.filter((o) => o._id == idOfEdited)[0];
+        // if no data changes
+        if (comperableUser != undefined && comperableUser != null) {
+            console.log("found comperable user");
+            if (comperableUser.isAdmin == isAdminValue)
+                if (comperableUser.login == loginValue)
+                    if (comperableUser.userName == userNameValue) return;
+            console.log("updating user");
+        }
+        dispatch(
+            updateUser({
+                token: user.jwt,
+                user: {
+                    _id: idOfEdited,
+                    login: loginValue,
+                    isAdmin: isAdminValue,
+                    userName: userNameValue,
+                },
+            }) as any
+        );
     };
     const handleRemove = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, values: IUser) => {
         e.preventDefault();
-        console.log(values);
-        // dispatch(Delete({ token: user.jwt, itemId: values._id }) as any);
+        console.log(values._id);
+        dispatch(deleteUser({ token: user.jwt, _id: values._id }) as any);
     };
     const columns = React.useMemo<Column<IUser>[]>(
         () => [
@@ -69,42 +100,14 @@ export const ManageUsers = () => {
                 Header: "Login",
                 accessor: "login",
                 Cell: (cellData) => {
-                    return (
-                        <>
-                            {cellData.row.original._id != idOfEdited ? (
-                                cellData.row.original.login
-                            ) : (
-                                <input
-                                    onChange={(e) => handleValuesChange(e)}
-                                    className="w-[8em] border rounded-full"
-                                    type="text"
-                                    name="login"
-                                    value={editedUser.login}
-                                />
-                            )}
-                        </>
-                    );
+                    return <>{cellData.row.original.login}</>;
                 },
             },
             {
                 Header: "User Name",
                 accessor: "userName",
                 Cell: (cellData) => {
-                    return (
-                        <>
-                            {cellData.row.original._id != idOfEdited ? (
-                                cellData.row.original.userName
-                            ) : (
-                                <input
-                                    onChange={(e) => handleValuesChange(e)}
-                                    className="w-[8em] border rounded-full"
-                                    type="text"
-                                    name="userName"
-                                    value={editedUser.userName}
-                                />
-                            )}
-                        </>
-                    );
+                    return <>{cellData.row.original.userName}</>;
                 },
             },
             {
@@ -113,21 +116,11 @@ export const ManageUsers = () => {
                 Cell: (cellData) => {
                     return (
                         <>
-                            {cellData.row.original._id != idOfEdited ? (
-                                <input
-                                    disabled={true}
-                                    type="checkbox"
-                                    defaultChecked={cellData.row.original.isAdmin}
-                                />
-                            ) : (
-                                <input
-                                    onChange={(e) => handleValuesChange(e)}
-                                    disabled={false}
-                                    type="checkbox"
-                                    name="isAdmin"
-                                    checked={editedUser.isAdmin}
-                                />
-                            )}
+                            <input
+                                disabled={true}
+                                type="checkbox"
+                                defaultChecked={cellData.row.original.isAdmin}
+                            />
                         </>
                     );
                 },
@@ -137,23 +130,13 @@ export const ManageUsers = () => {
                 Cell: (cellData: any) => {
                     return (
                         <>
-                            {cellData.row.original._id != idOfEdited ? (
-                                <button
-                                    // this check is reversed version from above to add disabled status to button
-                                    className="bg-button-enabled-0 text-button-enabled-1 border-button-enabled-1 border-[1px] font-bold py-1 px-8 rounded-lg hover:bg-button-enabled-1 hover:text-button-enabled-0 cursor-pointer transition-colors disabled:bg-button-disabled-0 disabled:text-button-disabled-1 disabled:border-button-disabled-1"
-                                    onClick={(e) => handleUpdate(e, cellData.cell.row.original)}
-                                >
-                                    {"Update"}
-                                </button>
-                            ) : (
-                                <button
-                                    // this check is reversed version from above to add disabled status to button
-                                    className="bg-button-enabled-0 text-button-enabled-1 border-button-enabled-1 border-[1px] font-bold py-1 px-8 rounded-lg hover:bg-button-enabled-1 hover:text-button-enabled-0 cursor-pointer transition-colors disabled:bg-button-disabled-0 disabled:text-button-disabled-1 disabled:border-button-disabled-1"
-                                    onClick={(e) => handleSave(e, cellData.cell.row.original)}
-                                >
-                                    {"Save"}
-                                </button>
-                            )}
+                            <button
+                                // this check is reversed version from above to add disabled status to button
+                                className="bg-button-enabled-0 text-button-enabled-1 border-button-enabled-1 border-[1px] font-bold py-1 px-8 rounded-lg hover:bg-button-enabled-1 hover:text-button-enabled-0 cursor-pointer transition-colors disabled:bg-button-disabled-0 disabled:text-button-disabled-1 disabled:border-button-disabled-1"
+                                onClick={(e) => handleUpdate(e, cellData.cell.row.original)}
+                            >
+                                {"Update"}
+                            </button>
                         </>
                     );
                 },
@@ -174,11 +157,86 @@ export const ManageUsers = () => {
                 },
             },
         ],
-        [usersData, idOfEdited]
+        [usersData]
     );
     return (
-        <div className="w-11/12 max-h-[100vh] overflow-y-scroll">
-            <Table title="" data={usersData} columns={columns} />
-        </div>
+        <>
+            {idOfEdited == "nothing" ? (
+                <form className="z-10 min-w-[40%] min-h-[70%] flex items-center flex-col bg-white relative">
+                    <div className="min-w-[80rem] max-h-[100vh] overflow-y-scroll flex justify-center items-center">
+                        <Table title="" data={usersData} columns={columns} />
+                        <span className="wrapper-x" onClick={() => visibility(false)}>
+                            <svg
+                                clipRule="evenodd"
+                                fillRule="evenodd"
+                                strokeLinejoin="round"
+                                strokeMiterlimit="2"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    d="m12.002 2.005c5.518 0 9.998 4.48 9.998 9.997 0 5.518-4.48 9.998-9.998 9.998-5.517 0-9.997-4.48-9.997-9.998 0-5.517 4.48-9.997 9.997-9.997zm0 8.933-2.721-2.722c-.146-.146-.339-.219-.531-.219-.404 0-.75.324-.75.749 0 .193.073.384.219.531l2.722 2.722-2.728 2.728c-.147.147-.22.34-.22.531 0 .427.35.75.751.75.192 0 .384-.073.53-.219l2.728-2.728 2.729 2.728c.146.146.338.219.53.219.401 0 .75-.323.75-.75 0-.191-.073-.384-.22-.531l-2.727-2.728 2.717-2.717c.146-.147.219-.338.219-.531 0-.425-.346-.75-.75-.75-.192 0-.385.073-.531.22z"
+                                    fillRule="nonzero"
+                                />
+                            </svg>
+                        </span>
+                    </div>
+                </form>
+            ) : (
+                <form className="z-10 min-w-[40%] min-h-[70%] flex justify-center items-center flex-col bg-white relative">
+                    <div className="min-w-[80rem] max-h-[100vh] overflow-y-scroll flex justify-center items-center">
+                        <div className="w-1/2 flex justify-center items-center flex-wrap">
+                            <input
+                                name="login"
+                                onChange={(e) => handleValuesChange(e)}
+                                type="text"
+                                value={loginValue}
+                                className="p-3 border mt-1 mb-5 rounded-full w-full"
+                            />
+                            <input
+                                name="userName"
+                                onChange={(e) => handleValuesChange(e)}
+                                type="text"
+                                value={userNameValue}
+                                className="p-3 border mt-1 mb-5 rounded-full w-full"
+                            />
+                            <div className="flex gap-1 w-full justify-center mb-5">
+                                <label htmlFor="isAdmin" className="text-sm no-tap">
+                                    Is admin
+                                </label>
+                                <input
+                                    name="isAdmin"
+                                    id="isAdmin"
+                                    onChange={(e) => handleValuesChange(e)}
+                                    type="checkbox"
+                                    checked={isAdminValue}
+                                />
+                            </div>
+                            <button onClick={(e) => handleSave(e)} className="w-1/3">
+                                Update user
+                            </button>
+                            <button onClick={(e) => setIdOfEdited("nothing")} className="w-1/3">
+                                Cancel
+                            </button>
+                        </div>
+                        <span className="wrapper-x" onClick={() => visibility(false)}>
+                            <svg
+                                clipRule="evenodd"
+                                fillRule="evenodd"
+                                strokeLinejoin="round"
+                                strokeMiterlimit="2"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    d="m12.002 2.005c5.518 0 9.998 4.48 9.998 9.997 0 5.518-4.48 9.998-9.998 9.998-5.517 0-9.997-4.48-9.997-9.998 0-5.517 4.48-9.997 9.997-9.997zm0 8.933-2.721-2.722c-.146-.146-.339-.219-.531-.219-.404 0-.75.324-.75.749 0 .193.073.384.219.531l2.722 2.722-2.728 2.728c-.147.147-.22.34-.22.531 0 .427.35.75.751.75.192 0 .384-.073.53-.219l2.728-2.728 2.729 2.728c.146.146.338.219.53.219.401 0 .75-.323.75-.75 0-.191-.073-.384-.22-.531l-2.727-2.728 2.717-2.717c.146-.147.219-.338.219-.531 0-.425-.346-.75-.75-.75-.192 0-.385.073-.531.22z"
+                                    fillRule="nonzero"
+                                />
+                            </svg>
+                        </span>
+                    </div>
+                </form>
+            )}
+        </>
     );
 };

@@ -13,7 +13,7 @@ export const Table: React.FC<IProps> = ({ title, columns, data }) => {
     return (
         <>
             <TableTitle title={title} />
-            <section className="flex justify-center items-center">
+            <section className=" w-full flex justify-center items-center">
                 {table.rows.length <= 0 ? (
                     <h1 className="text-3xl mt-4">
                         Ups. looks like there is no product in this table

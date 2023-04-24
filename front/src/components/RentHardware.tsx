@@ -64,7 +64,7 @@ export function RentHardware() {
     );
     return (
         <div className="w-5/6">
-            <Table title="Hardware List" data={data} columns={columns} />
+            <Table title="Rent Hardware" data={data} columns={columns} />
         </div>
     );
 }

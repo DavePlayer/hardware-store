@@ -12,6 +12,7 @@ export interface IUser {
     isLoged: boolean;
     jwt: string;
     loading: boolean;
+    imgPath: string | null;
 }
 
 const initialState: IUser = {
@@ -21,6 +22,7 @@ const initialState: IUser = {
     userName: "super hacka",
     isLoged: false,
     jwt: "",
+    imgPath: null,
 };
 
 export const fetchLogin = createAsyncThunk(
@@ -55,6 +57,7 @@ export const userSlice = createSlice({
             state.isLoged = true;
             state.jwt = token;
             state.userName = data.userName;
+            state.imgPath = data.imgPath;
         },
         logout: (state) => {
             console.log(`loging out`);
@@ -66,6 +69,7 @@ export const userSlice = createSlice({
                 userName: "super hacka",
                 isLoged: false,
                 jwt: "",
+                imgPath: null,
             });
         },
     },
@@ -80,6 +84,7 @@ export const userSlice = createSlice({
             state.isLoged = true;
             state.jwt = (action.payload as unknown as IUser).jwt;
             state.userName = (action.payload as unknown as IUser).userName;
+            state.imgPath = (action.payload as unknown as IUser).imgPath;
             localStorage.setItem("token", state.jwt);
         });
         builder.addCase(fetchLogin.rejected, (state, action) => {

@@ -10,6 +10,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Logout } from "./components/Logout.js";
 import { AdminPanel } from "./components/AdminPanel";
+import { AdminProtector } from "./components/AdminProtector.js";
 
 function App() {
     return (
@@ -37,9 +38,9 @@ function App() {
                         <Route
                             path="/admin-panel"
                             element={
-                                <Protector>
+                                <AdminProtector>
                                     <AdminPanel />
-                                </Protector>
+                                </AdminProtector>
                             }
                         />
                     </Route>
