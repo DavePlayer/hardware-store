@@ -8,11 +8,26 @@ export const itemsRouter = Router();
 itemsRouter.get("/", validateJWT, async (req, res) => {
     try {
         const items = await database.getItems("items", req.body.token._id);
-        // console.log(
-        //     "------------------------------\n",
-        //     items,
-        //     "\n------------------------------------------"
-        // );
+        return res.json({ items });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ status: "server error when reciving items" });
+    }
+});
+
+itemsRouter.get("/not-yours", validateJWT, async (req, res) => {
+    try {
+        const items = await database.getItemsNotYours("items", req.body.token._id);
+        return res.json({ items });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ status: "server error when reciving items" });
+    }
+});
+
+itemsRouter.get("/all", validateJWT, async (req, res) => {
+    try {
+        const items = await database.getAllItems("items", req.body.token._id);
         return res.json({ items });
     } catch (err) {
         console.error(err);

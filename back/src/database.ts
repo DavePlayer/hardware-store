@@ -2,15 +2,16 @@ import { MongoClient, Db, ObjectId } from "mongodb";
 import bcrypt from "bcrypt";
 
 export interface IUser {
-    _Id?: number;
+    _id?: string;
     login: string;
     password: string;
     isAdmin: boolean;
     userName: String;
+    imgPath: string;
 }
 
 export interface Iitem {
-    _Id?: number;
+    _id?: ObjectId | undefined;
     nameAndCompany: string;
     date: string;
     rentedTo: number | null;
@@ -18,7 +19,7 @@ export interface Iitem {
 }
 
 interface IaddedItem extends Iitem {
-    _Id?: number;
+    _id?: ObjectId | undefined;
 }
 
 class DatabaseC {
@@ -90,6 +91,19 @@ class DatabaseC {
             throw error;
         }
     };
+    getAllUsers = async (collectionName: string) => {
+        try {
+            collectionName = await this.validateCollection(collectionName);
+            const gotUsers = await this.client
+                .db(this.dbName)
+                .collection(collectionName)
+                .find({})
+                .toArray();
+            return gotUsers as unknown as Array<IUser> | null;
+        } catch (error) {
+            throw error;
+        }
+    };
 
     getItems = async (collectionName: string, userId: number) => {
         try {
@@ -98,6 +112,33 @@ class DatabaseC {
                 .db(this.dbName)
                 .collection(collectionName)
                 .find({ $or: [{ rentedTo: null }, { rentedTo: userId }] })
+                .toArray();
+            return items as unknown as Array<Iitem> | null;
+        } catch (error) {
+            throw error;
+        }
+    };
+    getItemsNotYours = async (collectionName: string, userId: number) => {
+        try {
+            collectionName = await this.validateCollection(collectionName);
+            const items = await this.client
+                .db(this.dbName)
+                .collection(collectionName)
+                .find({ beingRepaired: false })
+                .toArray();
+            return items as unknown as Array<Iitem> | null;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    getAllItems = async (collectionName: string, userId: number) => {
+        try {
+            collectionName = await this.validateCollection(collectionName);
+            const items = await this.client
+                .db(this.dbName)
+                .collection(collectionName)
+                .find({})
                 .toArray();
             return items as unknown as Array<Iitem> | null;
         } catch (error) {
@@ -170,6 +211,20 @@ class DatabaseC {
         }
     };
 
+    releseUserItems = async (_id: string, collectionName: string) => {
+        try {
+            console.log(`releasing items from user: (${_id})`);
+            collectionName = await this.validateCollection(collectionName);
+            await this.client
+                .db(this.dbName)
+                .collection(collectionName)
+                .updateMany({ rentedTo: _id }, { $set: { rentedTo: null } });
+            return "properly released items";
+        } catch (err) {
+            throw err;
+        }
+    };
+
     sendToRepair = async (collectionName: string, itemId: number) => {
         try {
             console.log(`releasing item(${itemId})`);
@@ -208,9 +263,50 @@ class DatabaseC {
             collectionName = await this.validateCollection(collectionName);
             user.password = await this.hashPassword(user.password);
             console.log("savind user: ", user.login);
-            await this.client.db(this.dbName).collection(collectionName).insertOne(user);
+            await this.client
+                .db(this.dbName)
+                .collection(collectionName)
+                .insertOne(user as any);
         } catch (err) {
             throw err;
+        }
+    };
+    updateUser = async (user: IUser, collectionName: string) => {
+        try {
+            collectionName = await this.validateCollection(collectionName);
+            const { _id, ...update } = user;
+            await this.client
+                .db(this.dbName)
+                .collection(collectionName)
+                .updateOne({ _id: new ObjectId(user._id) }, { $set: { ...update } });
+            return "updated user properly";
+        } catch (err) {
+            throw err;
+        }
+    };
+    deleteUser = async (_id: string, collectionName: string) => {
+        try {
+            collectionName = await this.validateCollection(collectionName);
+            await this.client
+                .db(this.dbName)
+                .collection(collectionName)
+                .deleteOne({ _id: new ObjectId(_id) });
+            return "removed user properly";
+        } catch (err) {
+            throw err;
+        }
+    };
+    getUserByID = async (_id: string, collectionName: string) => {
+        try {
+            collectionName = await this.validateCollection(collectionName);
+            const gotUser = await this.client
+                .db(this.dbName)
+                .collection(collectionName)
+                .findOne({ _id: new ObjectId(_id) });
+            // console.log(gotUser);
+            return gotUser as unknown as IUser | null;
+        } catch (error) {
+            throw error;
         }
     };
 }
