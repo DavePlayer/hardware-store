@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import config from "./../../config.json";
 import jwtDecode from "jwt-decode";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -28,10 +27,13 @@ const initialState: IUser = {
 export const fetchLogin = createAsyncThunk(
     "user/fetchLogin",
     ({ login, password }: { login: string; password: string }) => {
-        return fetch(`${config.serverUrl}/login?${new URLSearchParams({ login, password })}`, {
-            method: "GET",
-            headers: { "Content-type": "application/json;charset=utf-8" },
-        })
+        return fetch(
+            `${import.meta.env.VITE_API_URL}/login?${new URLSearchParams({ login, password })}`,
+            {
+                method: "GET",
+                headers: { "Content-type": "application/json;charset=utf-8" },
+            }
+        )
             .then(async (data) => {
                 if (data.ok) {
                     return data.json();

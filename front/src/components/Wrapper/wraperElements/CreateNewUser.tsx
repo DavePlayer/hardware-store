@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import config from "./../../../config.json";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSelector } from "react-redux";
@@ -53,7 +52,7 @@ export const CreateNewUser: React.FC<{
         formData.append("data", JSON.stringify(data));
         if (!domainTest) return toast.error("wrong login email");
         try {
-            const result = await fetch(`${config.serverUrl}/register`, {
+            const result = await fetch(`${import.meta.env.VITE_API_URL}/register`, {
                 method: "POST",
                 headers: {
                     authorization: user.jwt,
