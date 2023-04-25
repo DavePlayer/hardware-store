@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useNavigate } from "react-router-dom";
 import { readToken } from "../redux/reducers/user.js";
 import { RootState } from "../redux/store.js";
-import config from "./../config.json";
 
 export const Protector: React.FC<{ children?: ReactNode }> = ({ children }) => {
     const user = useSelector((state: RootState) => state.user);
@@ -20,7 +19,7 @@ export const Protector: React.FC<{ children?: ReactNode }> = ({ children }) => {
         }
 
         if (user.jwt.length <= 0 && token != null && token.length > 0) {
-            fetch(`${config.serverUrl}/login/validate-token`, {
+            fetch(`${import.meta.env.VITE_API_URL}/login/validate-token`, {
                 method: "GET",
                 headers: { authorization: token },
             })
@@ -44,7 +43,7 @@ export const Protector: React.FC<{ children?: ReactNode }> = ({ children }) => {
         }
         // secure fake token paste (verify before forwarding to element)
         if (user.jwt.length > 0)
-            fetch(`${config.serverUrl}/login/validate-token`, {
+            fetch(`${import.meta.env.VITE_API_URL}/login/validate-token`, {
                 headers: { authorization: user.jwt },
             })
                 .then(async (data) => {

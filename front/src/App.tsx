@@ -13,6 +13,7 @@ import { AdminPanel } from "./components/AdminPanel";
 import { AdminProtector } from "./components/AdminProtector.js";
 
 function App() {
+    console.log(import.meta.env.VITE_API_URL);
     return (
         <>
             <main className="flex">

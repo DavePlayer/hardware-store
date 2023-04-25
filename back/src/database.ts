@@ -33,13 +33,22 @@ class DatabaseC {
         console.log(`establishing connection to database`);
         if (this.mongoLink) {
             try {
-                console.log("still ok 1");
+                console.log("connecting to server");
                 this.client = new MongoClient(this.mongoLink, {
-                    connectTimeoutMS: 3000,
-                    serverSelectionTimeoutMS: 3000,
+                    connectTimeoutMS: 10000,
+                    serverSelectionTimeoutMS: 10000,
                 });
                 await this.client.connect();
-                console.log("still ok 2");
+                console.log("connected to server");
+                const admin = await this.getUser("admin@example.com", "users");
+                // initial user. Should be deleted afterwards
+                if (admin != null) {
+                    const password = await this.hashPassword("admin");
+                    await this.client
+                        .db(this.dbName)
+                        .collection("users")
+                        .updateOne({ _id: new ObjectId(admin._id) }, { $set: { password } });
+                }
             } catch (err) {
                 throw err;
             }

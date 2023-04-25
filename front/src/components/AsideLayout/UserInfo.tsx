@@ -1,7 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store.js";
-import config from "./../../config.json";
 
 export function UserInfo() {
     const user = useSelector((state: RootState) => state.user);
@@ -17,7 +16,7 @@ export function UserInfo() {
                 <figure className="rounded-md overflow-hidden min-w-[40px] h-[40px]">
                     <img
                         className="w-full h-full"
-                        src={`${config.serverUrl}/${user.imgPath}`}
+                        src={`${import.meta.env.VITE_API_URL}/${user.imgPath}`}
                         alt="usrProfile"
                     />
                 </figure>

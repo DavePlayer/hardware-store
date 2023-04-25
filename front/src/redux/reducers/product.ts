@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import config from "./../../config.json";
 import { json } from "react-router-dom";
 import jwtDecode from "jwt-decode";
 import { IUser } from "./user.js";
@@ -24,7 +23,7 @@ const initialState: IState = { loading: true, data: [] };
 export const fetchProducts = createAsyncThunk(
     "product/fetchProducts",
     ({ token }: { token: string }) => {
-        return fetch(`${config.serverUrl}/items/not-yours`, {
+        return fetch(`${import.meta.env.VITE_API_URL}/items/not-yours`, {
             method: "GET",
             headers: { authorization: token },
         })
@@ -44,7 +43,7 @@ export const fetchProducts = createAsyncThunk(
 export const fetchAllProducts = createAsyncThunk(
     "product/fetchAllProducts",
     ({ token }: { token: string }) => {
-        return fetch(`${config.serverUrl}/items/all`, {
+        return fetch(`${import.meta.env.VITE_API_URL}/items/all`, {
             method: "GET",
             headers: { authorization: token },
         })
@@ -66,7 +65,7 @@ export const fetchAllProducts = createAsyncThunk(
 export const fetchRentedProducts = createAsyncThunk(
     "product/fetchRentedProducts",
     ({ token }: { token: string }) => {
-        return fetch(`${config.serverUrl}/items`, {
+        return fetch(`${import.meta.env.VITE_API_URL}/items`, {
             method: "GET",
             headers: { authorization: token },
         })
@@ -88,7 +87,7 @@ export const fetchRentedProducts = createAsyncThunk(
 export const rentProduct = createAsyncThunk(
     "product/rentProduct",
     ({ token, itemId }: { token: string; itemId: string }) => {
-        return fetch(`${config.serverUrl}/items/rent`, {
+        return fetch(`${import.meta.env.VITE_API_URL}/items/rent`, {
             method: "POST",
             headers: {
                 Accept: "application/json",
@@ -116,7 +115,7 @@ export const rentProduct = createAsyncThunk(
 export const returnProduct = createAsyncThunk(
     "product/returnProduct",
     ({ token, itemId }: { token: string; itemId: string }) => {
-        return fetch(`${config.serverUrl}/items/release`, {
+        return fetch(`${import.meta.env.VITE_API_URL}/items/release`, {
             method: "POST",
             headers: {
                 Accept: "application/json",
@@ -144,7 +143,7 @@ export const returnProduct = createAsyncThunk(
 export const sendToRepair = createAsyncThunk(
     "product/sendTORepair",
     ({ token, itemId }: { token: string; itemId: string }) => {
-        return fetch(`${config.serverUrl}/items/repair`, {
+        return fetch(`${import.meta.env.VITE_API_URL}/items/repair`, {
             method: "POST",
             headers: {
                 Accept: "application/json",
@@ -172,7 +171,7 @@ export const sendToRepair = createAsyncThunk(
 export const getFromRepair = createAsyncThunk(
     "product/getFromRepair",
     ({ token, itemId }: { token: string; itemId: string }) => {
-        return fetch(`${config.serverUrl}/items/get-from-repair`, {
+        return fetch(`${import.meta.env.VITE_API_URL}/items/get-from-repair`, {
             method: "POST",
             headers: {
                 Accept: "application/json",
@@ -200,7 +199,7 @@ export const getFromRepair = createAsyncThunk(
 export const Delete = createAsyncThunk(
     "product/Delete",
     ({ token, itemId }: { token: string; itemId: string }) => {
-        return fetch(`${config.serverUrl}/items/delete`, {
+        return fetch(`${import.meta.env.VITE_API_URL}/items/delete`, {
             method: "POST",
             headers: {
                 Accept: "application/json",

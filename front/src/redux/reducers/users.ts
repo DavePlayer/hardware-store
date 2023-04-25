@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import config from "../../config.json";
 import jwtDecode from "jwt-decode";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -24,7 +23,7 @@ const initialState: Array<IUser> = [];
 export const fetchAllUsers = createAsyncThunk(
     "user/fetchAllUsers",
     ({ token }: { token: string }) => {
-        return fetch(`${config.serverUrl}/login/get-all-users`, {
+        return fetch(`${import.meta.env.VITE_API_URL}/login/get-all-users`, {
             method: "GET",
             headers: { authorization: token, "Content-Type": "application/json;charset=utf-8" },
         })
@@ -50,7 +49,7 @@ export const fetchAllUsers = createAsyncThunk(
 export const updateUser = createAsyncThunk(
     "user/updateuser",
     ({ token, user }: { token: string; user: IUpdate }) => {
-        return fetch(`${config.serverUrl}/register/update`, {
+        return fetch(`${import.meta.env.VITE_API_URL}/register/update`, {
             method: "POST",
             headers: { authorization: token, "Content-Type": "application/json;charset=utf-8" },
             body: JSON.stringify(user),
@@ -76,7 +75,7 @@ export const updateUser = createAsyncThunk(
 export const deleteUser = createAsyncThunk(
     "user/deleteUser",
     ({ token, _id }: { token: string; _id: string }) => {
-        return fetch(`${config.serverUrl}/user`, {
+        return fetch(`${import.meta.env.VITE_API_URL}/user`, {
             method: "DELETE",
             headers: { authorization: token, "Content-Type": "application/json;charset=utf-8" },
             body: JSON.stringify({ _id }),

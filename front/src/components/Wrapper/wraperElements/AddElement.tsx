@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import config from "./../../../config.json";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSelector } from "react-redux";
@@ -44,7 +43,7 @@ export const AddElement: React.FC<{
         e.preventDefault();
         if (data.nameAndCompany.length <= 0) return toast.error("some field is empty");
         try {
-            const result = await fetch(`${config.serverUrl}/items/add`, {
+            const result = await fetch(`${import.meta.env.VITE_API_URL}/items/add`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
