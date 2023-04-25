@@ -3,5 +3,38 @@
 @tailwind utilities;
 
 .test {
-  @apply w-[100%] h-[100%] bg-red-500;
+    @apply w-[100%] h-[100%] bg-red-500;
+}
+
+.aside-link {
+    @apply w-full p-4 rounded-lg flex fill-gray-400 text-gray-400 mt-2;
+}
+.aside-link p {
+    @apply pl-2;
+}
+
+.aside-link.active {
+    @apply bg-aside-button fill-white text-white;
+}
+
+.no-tap {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+button {
+    @apply p-3 bg-blue-600 rounded-full text-white font-semibold;
+}
+
+.wrapper-x {
+    @apply absolute top-3 right-3 w-[40px];
+}
+
+.wrapper-x svg {
+    @apply fill-aside-default cursor-pointer;
 }
