@@ -51,7 +51,6 @@ export const userSlice = createSlice({
         readToken: (state, action) => {
             const { token }: { token: string } = action.payload;
             const data: IUser = jwtDecode(token);
-            console.log(`----------------------------`, data);
             state._id = data._id;
             state.isAdmin = data.isAdmin;
             state.isLoged = true;

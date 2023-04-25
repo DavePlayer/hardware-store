@@ -21,10 +21,8 @@ export function RentHardware() {
         dispatch(fetchRentedProducts({ token: user.jwt }) as any);
     }, []);
     const handleButton = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, values: IProduct) => {
-        console.log(values._id);
         dispatch(returnProduct({ token: user.jwt, itemId: values._id }) as any);
     };
-    console.log(products);
     const data = React.useMemo<Array<IProduct>>(() => [...products.data], [products.data]);
     const columns = React.useMemo<Column<IProduct>[]>(
         () => [
@@ -36,8 +34,8 @@ export function RentHardware() {
                 Header: "Date",
                 accessor: "date",
                 sortType: (a, b) => {
-                    const aa = DateTime.fromISO(a.original.date.split(".").reverse().join("-"))
-                    const bb = DateTime.fromISO(b.original.date.split(".").reverse().join("-"))
+                    const aa = DateTime.fromISO(a.original.date.split(".").reverse().join("-"));
+                    const bb = DateTime.fromISO(b.original.date.split(".").reverse().join("-"));
                     return bb.diff(aa).milliseconds > 0 ? 1 : -1;
                 },
             },

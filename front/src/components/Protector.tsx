@@ -26,7 +26,6 @@ export const Protector: React.FC<{ children?: ReactNode }> = ({ children }) => {
             })
                 .then(async (data) => {
                     const json = await data.json();
-                    console.log(json);
                     if (!data.ok) {
                         localStorage.removeItem("token");
                         return setError(json);

@@ -24,7 +24,6 @@ export const CreateNewUser: React.FC<{
     });
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(selectedFile);
         const { name, value } = e.target;
         setData((prevState) => {
             return {
@@ -34,7 +33,6 @@ export const CreateNewUser: React.FC<{
         });
     };
     const handleFile = (file: File) => {
-        console.log(file);
         if (file.type == "image/png" || file.type == "image/jpeg" || file.type == "image/jpg") {
             setSelectedFile(file);
         }

@@ -42,7 +42,6 @@ export const ManageUsers: React.FC<{
     };
     const handleValuesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, type, checked } = e.target;
-        console.log(name, value, loginValue, userNameValue, isAdminValue);
         switch (name) {
             case "login":
                 setLoginValue(value);
@@ -59,12 +58,10 @@ export const ManageUsers: React.FC<{
     };
     const handleSave = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
-        console.log(loginValue, userNameValue, isAdminValue);
         setIdOfEdited("nothing");
         const comperableUser = usersData.filter((o) => o._id == idOfEdited)[0];
         // if no data changes
         if (comperableUser != undefined && comperableUser != null) {
-            console.log("found comperable user");
             if (comperableUser.isAdmin == isAdminValue)
                 if (comperableUser.login == loginValue)
                     if (comperableUser.userName == userNameValue) return;
@@ -84,7 +81,6 @@ export const ManageUsers: React.FC<{
     };
     const handleRemove = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, values: IUser) => {
         e.preventDefault();
-        console.log(values._id);
         dispatch(deleteUser({ token: user.jwt, _id: values._id }) as any);
     };
     const columns = React.useMemo<Column<IUser>[]>(
@@ -215,7 +211,10 @@ export const ManageUsers: React.FC<{
                             <button onClick={(e) => handleSave(e)} className="w-1/3">
                                 Update user
                             </button>
-                            <button onClick={(e) => setIdOfEdited("nothing")} className="w-1/3">
+                            <button
+                                onClick={(e) => setIdOfEdited("nothing")}
+                                className="w-1/3 ml-10"
+                            >
                                 Cancel
                             </button>
                         </div>

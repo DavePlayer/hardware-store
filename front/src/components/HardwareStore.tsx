@@ -18,7 +18,6 @@ export function HardwareStore() {
         e.preventDefault();
         dispatch(rentProduct({ token: user.jwt, itemId: values._id }) as any);
     };
-    console.log(products);
     const data = React.useMemo<Array<IProduct>>(() => [...products.data], [products.data]);
     const columns = React.useMemo<Column<IProduct>[]>(
         () => [
@@ -30,8 +29,8 @@ export function HardwareStore() {
                 Header: "Date",
                 accessor: "date",
                 sortType: (a, b) => {
-                    const aa = DateTime.fromISO(a.original.date.split(".").reverse().join("-"))
-                    const bb = DateTime.fromISO(b.original.date.split(".").reverse().join("-"))
+                    const aa = DateTime.fromISO(a.original.date.split(".").reverse().join("-"));
+                    const bb = DateTime.fromISO(b.original.date.split(".").reverse().join("-"));
                     return bb.diff(aa).milliseconds > 0 ? 1 : -1;
                 },
             },
@@ -57,11 +56,12 @@ export function HardwareStore() {
                     return (
                         <span
                             // here's similar example from above, but here it just add custom css properties (red, green color)
-                            className={`flex gap-1 items-center ${cellData.row.original.rentedTo == null &&
+                            className={`flex gap-1 items-center ${
+                                cellData.row.original.rentedTo == null &&
                                 !cellData.row.original.beingRepaired
-                                ? "text-green-500 fill-green-500"
-                                : "text-red-500 fill-red-500"
-                                }`}
+                                    ? "text-green-500 fill-green-500"
+                                    : "text-red-500 fill-red-500"
+                            }`}
                         >
                             <svg
                                 className="h-[1rem]"
@@ -76,7 +76,7 @@ export function HardwareStore() {
                             </svg>
                             {/* same check from above */}
                             {cellData.row.original.rentedTo == null &&
-                                !cellData.row.original.beingRepaired
+                            !cellData.row.original.beingRepaired
                                 ? "Available"
                                 : "Not available"}
                         </span>

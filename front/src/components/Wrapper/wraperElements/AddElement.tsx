@@ -4,9 +4,10 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store.js";
+import { DateTime } from "luxon";
 interface IItem {
     nameAndCompany: string;
-    date: string;
+    date: DateTime;
     rentedTo: string | null;
     beingRepaired: boolean;
 }
@@ -16,7 +17,7 @@ export const AddElement: React.FC<{
 }> = ({ visibility }) => {
     const [data, setData] = useState<IItem>({
         nameAndCompany: "",
-        date: new Date().toISOString().slice(0, 10),
+        date: DateTime.now().setLocale("pl"),
         rentedTo: null,
         beingRepaired: false,
     });
@@ -32,16 +33,16 @@ export const AddElement: React.FC<{
     };
     const handleDate = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        const date = value.split("-").reverse().join(".");
-        setData((prev) => {
-            prev.date = date;
-            return prev;
-        });
+        const date = DateTime.fromISO(value).setLocale("pl");
+        setData((prev) => ({
+            ...prev,
+            date: date,
+        }));
     };
 
     const handleClick = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
-        // if (data.nameAndCompany.length <= 0) return toast.error("some field is empty")
+        if (data.nameAndCompany.length <= 0) return toast.error("some field is empty");
         try {
             const result = await fetch(`${config.serverUrl}/items/add`, {
                 method: "POST",
@@ -49,7 +50,7 @@ export const AddElement: React.FC<{
                     "Content-Type": "application/json",
                     Authorization: user.jwt,
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify({ ...data, date: data.date.toFormat("dd.MM.yyyy") }),
             });
             const json = await result.json();
             if (!result.ok) throw new Error(json.status);
@@ -76,7 +77,7 @@ export const AddElement: React.FC<{
             <input
                 type="date"
                 name="date"
-                defaultValue={data.date}
+                value={data.date.toISODate()}
                 onChange={(e) => handleDate(e)}
                 className="p-3 border mb-5 rounded-full w-1/2 text-center"
             />

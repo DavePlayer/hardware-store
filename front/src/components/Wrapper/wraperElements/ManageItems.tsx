@@ -29,9 +29,6 @@ export const ManageItems: React.FC<{
     useEffect(() => {
         dispatch(fetchAllProducts({ token: user.jwt }) as any);
     }, []);
-    // useEffect(() => {
-    //     console.log("products updated", products);
-    // }, [products]);
     const handleFix = async (
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
         values: IProduct
@@ -41,11 +38,9 @@ export const ManageItems: React.FC<{
         if (product[0].beingRepaired)
             await dispatch(getFromRepair({ token: user.jwt, itemId: values._id }) as any);
         else await dispatch(sendToRepair({ token: user.jwt, itemId: values._id }) as any);
-        console.log(products.data);
     };
     const handleRemove = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, values: IProduct) => {
         e.preventDefault();
-        console.log(values._id);
         dispatch(Delete({ token: user.jwt, itemId: values._id }) as any);
     };
     const columns = React.useMemo<Column<IProduct>[]>(
@@ -58,8 +53,8 @@ export const ManageItems: React.FC<{
                 Header: "Date",
                 accessor: "date",
                 sortType: (a, b) => {
-                    const aa = DateTime.fromISO(a.original.date.split(".").reverse().join("-"))
-                    const bb = DateTime.fromISO(b.original.date.split(".").reverse().join("-"))
+                    const aa = DateTime.fromISO(a.original.date.split(".").reverse().join("-"));
+                    const bb = DateTime.fromISO(b.original.date.split(".").reverse().join("-"));
                     return bb.diff(aa).milliseconds > 0 ? 1 : -1;
                 },
             },
@@ -85,12 +80,13 @@ export const ManageItems: React.FC<{
                     return (
                         <span
                             // here's similar example from above, but here it just add custom css properties (red, green color)
-                            className={`flex gap-1 items-center ${cellData.row.original.rentedTo != null
-                                ? "text-red-500 fill-red-500"
-                                : !cellData.row.original.beingRepaired
+                            className={`flex gap-1 items-center ${
+                                cellData.row.original.rentedTo != null
+                                    ? "text-red-500 fill-red-500"
+                                    : !cellData.row.original.beingRepaired
                                     ? "text-green-500 fill-green-500"
                                     : "text-orange-400 fill-orange-400"
-                                }`}
+                            }`}
                         >
                             <svg
                                 className="h-[1rem]"
@@ -107,8 +103,8 @@ export const ManageItems: React.FC<{
                             {cellData.row.original.rentedTo != null
                                 ? "rented"
                                 : !cellData.row.original.beingRepaired
-                                    ? "Ok"
-                                    : "In repair"}
+                                ? "Ok"
+                                : "In repair"}
                         </span>
                     );
                 },
