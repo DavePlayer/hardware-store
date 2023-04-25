@@ -46,7 +46,8 @@ itemsRouter.post("/add", validateJWTadmin, async (req, res) => {
             item.beingRepaired == undefined ||
             item.beingRepaired == null
         )
-            return res.status(400).json({ error: "item is invalid" });
+            return res.status(400).json({ status: "not sufficient data in body provided" });
+        if (item.nameAndCompany.length <= 0) return res.status(400).json({ status: "name of company and product is empty" })
         const status = await database.addItem("items", item);
         // console.log(
         //     "------------------------------\n",
