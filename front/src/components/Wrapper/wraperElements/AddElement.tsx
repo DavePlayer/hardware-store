@@ -16,7 +16,7 @@ export const AddElement: React.FC<{
 }> = ({ visibility }) => {
     const [data, setData] = useState<IItem>({
         nameAndCompany: "",
-        date: new Date().toISOString().split("T")[0],
+        date: new Date().toISOString().slice(0, 10),
         rentedTo: null,
         beingRepaired: false,
     });
@@ -41,6 +41,7 @@ export const AddElement: React.FC<{
 
     const handleClick = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
+        // if (data.nameAndCompany.length <= 0) return toast.error("some field is empty")
         try {
             const result = await fetch(`${config.serverUrl}/items/add`, {
                 method: "POST",

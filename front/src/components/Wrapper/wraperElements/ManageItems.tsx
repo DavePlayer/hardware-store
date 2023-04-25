@@ -10,6 +10,7 @@ import {
 } from "../../../redux/reducers/product.js";
 import { RootState } from "../../../redux/store.js";
 import { Table } from "../../CustomTable/Table.js";
+import { DateTime } from "luxon";
 
 interface IItem {
     nameAndCompany: string;
@@ -57,11 +58,9 @@ export const ManageItems: React.FC<{
                 Header: "Date",
                 accessor: "date",
                 sortType: (a, b) => {
-                    const aa = Date.parse(a.original.date.replaceAll(".", "/"));
-                    const bb = Date.parse(b.original.date.replaceAll(".", "/"));
-                    const dateA = new Date(aa).getTime();
-                    const dateB = new Date(bb).getTime();
-                    return dateA > dateB ? -1 : 1;
+                    const aa = DateTime.fromISO(a.original.date.split(".").reverse().join("-"))
+                    const bb = DateTime.fromISO(b.original.date.split(".").reverse().join("-"))
+                    return bb.diff(aa).milliseconds > 0 ? 1 : -1;
                 },
             },
             {
@@ -75,24 +74,23 @@ export const ManageItems: React.FC<{
                     // by that this function sorts elements by either available or unavailable status
 
                     // prettier-ignore
-                    return(
-            +!(a.original.rentedTo != null || a.original.beingRepaired)
-            >
-            +!(b.original.rentedTo != null || b.original.beingRepaired)
-            ? 1 : -1
-          )
+                    return (
+                        +!(a.original.rentedTo != null || a.original.beingRepaired)
+                            >
+                            +!(b.original.rentedTo != null || b.original.beingRepaired)
+                            ? 1 : -1
+                    )
                 },
                 Cell: (cellData) => {
                     return (
                         <span
                             // here's similar example from above, but here it just add custom css properties (red, green color)
-                            className={`flex gap-1 items-center ${
-                                cellData.row.original.rentedTo != null
-                                    ? "text-red-500 fill-red-500"
-                                    : !cellData.row.original.beingRepaired
+                            className={`flex gap-1 items-center ${cellData.row.original.rentedTo != null
+                                ? "text-red-500 fill-red-500"
+                                : !cellData.row.original.beingRepaired
                                     ? "text-green-500 fill-green-500"
                                     : "text-orange-400 fill-orange-400"
-                            }`}
+                                }`}
                         >
                             <svg
                                 className="h-[1rem]"
@@ -109,8 +107,8 @@ export const ManageItems: React.FC<{
                             {cellData.row.original.rentedTo != null
                                 ? "rented"
                                 : !cellData.row.original.beingRepaired
-                                ? "Ok"
-                                : "In repair"}
+                                    ? "Ok"
+                                    : "In repair"}
                         </span>
                     );
                 },

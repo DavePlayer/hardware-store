@@ -5,6 +5,7 @@ import { CellProps, Column, Row } from "react-table";
 import { fetchProducts, IProduct, rentProduct } from "../redux/reducers/product";
 import { RootState } from "../redux/store";
 import { Table } from "./CustomTable/Table";
+import { DateTime } from "luxon";
 
 export function HardwareStore() {
     const products = useSelector((state: RootState) => state.products);
@@ -29,11 +30,9 @@ export function HardwareStore() {
                 Header: "Date",
                 accessor: "date",
                 sortType: (a, b) => {
-                    const aa = Date.parse(a.original.date.replaceAll(".", "/"));
-                    const bb = Date.parse(b.original.date.replaceAll(".", "/"));
-                    const dateA = new Date(aa).getTime();
-                    const dateB = new Date(bb).getTime();
-                    return dateA > dateB ? -1 : 1;
+                    const aa = DateTime.fromISO(a.original.date.split(".").reverse().join("-"))
+                    const bb = DateTime.fromISO(b.original.date.split(".").reverse().join("-"))
+                    return bb.diff(aa).milliseconds > 0 ? 1 : -1;
                 },
             },
             {
@@ -47,23 +46,22 @@ export function HardwareStore() {
                     // by that this function sorts elements by either available or unavailable status
 
                     // prettier-ignore
-                    return(
-            +!(a.original.rentedTo != null || a.original.beingRepaired)
-            >
-            +!(b.original.rentedTo != null || b.original.beingRepaired)
-            ? 1 : -1
-          )
+                    return (
+                        +!(a.original.rentedTo != null || a.original.beingRepaired)
+                            >
+                            +!(b.original.rentedTo != null || b.original.beingRepaired)
+                            ? 1 : -1
+                    )
                 },
                 Cell: (cellData) => {
                     return (
                         <span
                             // here's similar example from above, but here it just add custom css properties (red, green color)
-                            className={`flex gap-1 items-center ${
-                                cellData.row.original.rentedTo == null &&
+                            className={`flex gap-1 items-center ${cellData.row.original.rentedTo == null &&
                                 !cellData.row.original.beingRepaired
-                                    ? "text-green-500 fill-green-500"
-                                    : "text-red-500 fill-red-500"
-                            }`}
+                                ? "text-green-500 fill-green-500"
+                                : "text-red-500 fill-red-500"
+                                }`}
                         >
                             <svg
                                 className="h-[1rem]"
@@ -78,7 +76,7 @@ export function HardwareStore() {
                             </svg>
                             {/* same check from above */}
                             {cellData.row.original.rentedTo == null &&
-                            !cellData.row.original.beingRepaired
+                                !cellData.row.original.beingRepaired
                                 ? "Available"
                                 : "Not available"}
                         </span>
