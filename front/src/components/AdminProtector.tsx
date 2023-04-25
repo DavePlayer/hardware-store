@@ -5,7 +5,7 @@ import { readToken } from "../redux/reducers/user.js";
 import { RootState } from "../redux/store.js";
 import config from "./../config.json";
 
-export const Protector: React.FC<{ children?: ReactNode }> = ({ children }) => {
+export const AdminProtector: React.FC<{ children?: ReactNode }> = ({ children }) => {
     const user = useSelector((state: RootState) => state.user);
     const [fetched, setFetched] = useState(false);
     const [error, setError] = useState("");
@@ -32,6 +32,13 @@ export const Protector: React.FC<{ children?: ReactNode }> = ({ children }) => {
                         return setError(json);
                     } else {
                         dispatch(readToken({ token }));
+                        if (user.isAdmin == false) {
+                            console.log("user is not an admin");
+                            setFetched(false);
+                            navigate("/hardware-store");
+                        } else {
+                            console.log("user is an admin");
+                        }
                         setFetched(true);
                     }
                 })
@@ -44,7 +51,7 @@ export const Protector: React.FC<{ children?: ReactNode }> = ({ children }) => {
             return;
         }
         // secure fake token paste (verify before forwarding to element)
-        if (user.jwt.length > 0)
+        if (user.jwt.length > 0) {
             fetch(`${config.serverUrl}/login/validate-token`, {
                 headers: { authorization: user.jwt },
             })
@@ -53,9 +60,19 @@ export const Protector: React.FC<{ children?: ReactNode }> = ({ children }) => {
                     if (!data.ok) setError((json as { status: string }).status);
                     return json;
                 })
-                .then((json) => setFetched(true));
+                .then(() => {
+                    if (user.isAdmin == false) {
+                        console.log("user is not an admin");
+                        setFetched(false);
+                        navigate(-1);
+                    } else {
+                        console.log("user is an admin");
+                    }
+                })
+                .finally(() => setFetched(true));
+        }
     }, []);
-    console.log("passing through protector");
+    console.log("passing through admin protector");
     return (
         <>
             {error && error.length > 0 ? (
