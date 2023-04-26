@@ -9,8 +9,8 @@ services:
     volumes:
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       # paths for backups and data itself (should be on server preferable disk infrastructure like RAIDs)
-      - ./backup:/backup
-      - ./db-data:/data/db
+      - /tmp//mongo-db-backup:/backup
+      - /tmp//mongo-db-data:/data/db
     command: 
       - '--logpath'
       - '/var/log/mongodb/mongod.log'
@@ -22,7 +22,7 @@ services:
     restart: always
     volumes:
       # backup of user images
-      - ./server-images:/backend/uploads
+      - /tmp/server-images:/backend/uploads
     environment:
       - MONGO_STRING=mongodb://mongo-server:27017
       - JWT_SECRET=wanna_remove_gnome?|yes_do_as_i_say!
