@@ -12,7 +12,6 @@ export const Login = () => {
         password: "",
     });
     const user = useSelector((state: RootState) => state.user);
-    console.log(user);
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setForm((prevState) => {
